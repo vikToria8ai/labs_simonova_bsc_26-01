@@ -1,26 +1,35 @@
-Q = float(input("Введите подачу Q (от 0.5 до 500 м^3/ч): "))
-H = float(input("Введите напор H (от 1 до 200 м): "))
-r = float(input("Введите плотность среды rho (от 800 до 1200 кг/м^3): "))
 
-g = 9.81
+from validation import input_innings, input_pressure,input_density
+from menu import show_menu, select_mode, mode_name
+from operations import power_drive,pressure_class
 
-if H < 10:
-    head_class = "малый напор"
-elif 10 <= H <= 60:
-    head_class = "средний"
-else:
-    head_class = "высокий"
 
-pump_types = ["центробежный", "поршневой", "вихревой"]
-es = [0.75, 0.85, 0.55]
+def main() -> None:
+    """Главный сценарий."""
+    print("=== Расчёт мощьности  ===")
 
-print("\n--- Результаты расчета ---")
+    while True:
+        show_menu()
+        n = select_mode()
+        if n is None:
+            print("Работа завершена.")
+            break
 
-for i in range(3):
-    pump_type = pump_types[i]
-    e = es[i]
+        q= input_innings()
+        h = input_pressure()
+        pl= input_density()
 
-    P = (r * g * Q * H) / (3600 * e * 1000)
-    
-    print(f"Тип: {pump_type} , Q: {Q} м3/ч ,  H: {H} м ({head_class}) , Мощность: {round(P, 2)} кВт")
+        p = power_drive(q, h , pl ,n)
+        cls = pressure_class(h)
 
+        print("\n Результаты ")
+        print(f"Тип насоса:     {mode_name(n)} (n = {n})")
+        print(f"Мощьность напора (P):    {p:.2f} ")
+        print(f"Подача насоса(Q):    {q} ")
+        print(f"Напор насоса (H):   {h} ")
+        print(f"Класс напора: {cls}")
+        print("\n")
+
+
+if __name__ == "__main__":
+    main()
